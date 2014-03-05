@@ -1,0 +1,101 @@
+LOG
+3/4/2014
+
+4:05
+ran:
+$python manage.py syncdb
+
+This was a mistake, this is for default sqllite db
+
+5:10
+NVM again, this should have worked.
+If our database (MySQL) is integrated properly, after running the above command, you should see this:
+'''
+(venv)$ python manage.py syncdb
+Creating tables ...
+Creating table django_admin_log
+Creating table auth_permission
+Creating table auth_group_permissions
+Creating table auth_group
+Creating table auth_user_groups
+Creating table auth_user_user_permissions
+Creating table auth_user
+Creating table django_content_type
+Creating table django_session
+'''
+But instead, I was getting:
+'''
+(venv)$ python manage.py runserver
+Traceback (most recent call last):
+  File "manage.py", line 10, in <module>
+    execute_from_command_line(sys.argv)
+  ....
+  File "/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/django/db/backends/mysql/base.py", line 17, in <module>
+    raise ImproperlyConfigured("Error loading MySQLdb module: %s" % e)
+django.core.exceptions.ImproperlyConfigured: Error loading MySQLdb module: dlopen(/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/_mysql.so, 2): Library not loaded: libmysqlclient.18.dylib
+  Referenced from: /Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/site-packages/_mysql.so
+  Reason: image not found
+'''
+What fixed the above error on my mac was just one command:
+
+$sudo ln -s /usr/local/mysql/lib/libmysqlclient.18.dylib /usr/lib/libmysqlclient.18.dylib
+
+After the above line was executed, I ran the same syncdb command, and the 'Creating tables...' lines came up. Success!
+But we're not done yet. You should now be asked this:
+You just installed Django's auth system, which means you don't have any superusers defined.
+
+$ Would you like to create one now? (yes/no):
+
+Type 'yes' and input your username, email and password. This is for our new admin "app".
+
+5:24
+MODELS and VIEWS -
+We've already been introduced to Model-View-Controller, so the use of django models should be a little more intuitive.
+
+When one wants to start a new app within this django project, we start by entering:
+
+$python manage.py startapp <appname here>
+
+I started the app called 'signups' (following the CodingEntrepeneurs' 3rd django tutorial)
+This creates a new subfolder within your /app/webapp/.. directory.
+
+There's 5 .py files automatically generated.
+
+1) The __init__.py file is so that the django engine recognizes that this directory (where __init__ lies) is intended for
+further 'stuffs' that web framewords do(?)
+
+2) admin.py... I dont know exactly... I'll come back to this
+3) models.py - here's where the everything under the skin of our website(s) or webpage(s) lies. Typically, we should include 
+....our app's data and fields ('Fields' are a django concept that we should know inside and out). Our models are changed almost
+....never once we sync its data to our database (yes, once we add Fields and data to this new app 'signups', we will have to
+....syncdb again)
+2) Ok, so in admin.py, we will "administrate" or declare our 'signups' models to the outside world. Maybe not, but at the very
+....least, our django-engine will know that it has to integrate this app with the rest of the django-powered site
+4) test.py - here goes all the test-driven implementations of our final, non-debug-mode code. Rule-of-thumb, for every working
+....2 lines of code not inside a 'try' or 'catch', there should be the equivalent 2 lines of working code within the 'try' and
+....'catch' blocks.
+5) views.py - here goes our code that either DECLARES a path to where our html is at, or IIRC we can write some django-html code
+....that translates straight into pure html code.
+
+First file we're editing:
+models.py
+Here we start using one of django's builtin classes, 'models' and the subclass 'models.XyzField, as well as getting
+first-hand exposure to django's popular web-framework-mechanics-whatever-the-hell-it-is.
+in the file /webapp/signups/models.py, I add these lines:
+'''
+class SignUp(models.Model):
+    #a Field object specifically for characters... this specific constructor takes as parameters... moving on
+    first_name = models.CharField(max_length=120,null=True,blank=True)
+    last_name = models.CharField(max_length=120,null=True,blank=True)
+    #a Field for emails, cool!
+    email = models.EmailField(null=False,blank=False)
+    #a Field for dates
+    timestamp = models.DateTimeField(auto_now_add=True,auto_now=False)
+    updated = models.DateTimeField(auto_now_add=False,auto_now=True)
+    #apparently this '__unicode__' sometimes knows referred to by '__str__' is for foreign character sets, with accents and stuff
+    def __unicode__(self):
+        return smart_unicode(self.email)
+'''
+
+After saving your changes to models.py, run the syncdb command again:
+python manage.py syncdb

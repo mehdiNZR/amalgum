@@ -14,7 +14,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.6/howto/deployment/checklist/
+# See https://docs.djangop 	roject.com/en/1.6/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'w=z8@7qx_r-i22_s)_h-674c33pv%-6si)u=#y7hxm6&km*n)p'
@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'signups',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -58,9 +59,11 @@ WSGI_APPLICATION = 'webapp.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'CSCI152',
-	'USER': 'admin',
-	'PASSWORD': 'password',	
+        'NAME': 'csci152',
+	'HOST': '127.0.0.1',
+	'PORT': '3306',
+	'USER': 'csci',
+	'PASSWORD': 'se152',	
     }
 }
 
